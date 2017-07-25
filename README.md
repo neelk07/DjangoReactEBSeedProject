@@ -1,4 +1,4 @@
-ngo React AWS(Elastic Beanstalk) Seed Project
+# Django React AWS(Elastic Beanstalk) Seed Project
 
 This guide will help you setup a Django app to use React.js via templates and deploy to AWS using their Elastic Beanstalk service.
 
