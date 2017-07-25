@@ -1,0 +1,8 @@
+*.pyc
+*.DS_Store
+[YOUR DJANGO PROJECT FOLDER NAME]/node_modules/*
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

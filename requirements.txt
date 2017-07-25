@@ -1,0 +1,6 @@
+Django==1.10.6
+django-webpack-loader==0.4.1
+Pillow==3.0.0
+django-storages==1.5.2
+boto==2.46.1
+psycopg2==2.7.1
