@@ -55,7 +55,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
 	1) If you encounter problems with installing this, try running `pip install awscli --user` instead
 2) Install eb tools using `pip install --upgrade awsebcli`
 3) Create your EB environment using `eb init -p python2.7 [PROJECT NAME]`
-4) ???
+4) `STILL IN PROGRESS`
 
 
 ## Django + React
