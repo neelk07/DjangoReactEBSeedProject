@@ -48,13 +48,75 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
 ```
 
+###### Configure Other Settings
+
+Paste the code below in your `settings.py` file to use AWS S3 to store static files (such as images)
+
+```
+AWS_STORAGE_BUCKET_NAME = '[YOUR S3 BUCKET NAME]'
+MEDIA_URL = 'http://%s.s3.amazonaws.com/uploads/' % AWS_STORAGE_BUCKET_NAME
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto.S3BotoStorage"
+```
+
+Change `ALLOWED_HOSTS` to
+```
+ALLOWED_HOSTS = ['localhost', '.elasticbeanstalk.com']  
+```
+
 ## Configure Elastic Beanstalk
 
 
 1) Install AWS command-line client using `pip install awscli` inside your virtual env
     1) If you encounter problems with installing this, try running `pip install awscli --user` instead
 2) Install eb tools using `pip install --upgrade awsebcli`
-3) Create your EB environment using `eb init -p python2.7 [PROJECT NAME]`
+3) Make the following changes to your `settings.py` file:
+- Replace the `DATABASES` variable with:
+
+```
+if 'RDS_DB_NAME' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': '[LOCAL DATABASE NAME]',
+            'USER': '[LOCAL DATABASE USER]',
+            'PASSWORD': '',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
+```
+
+This above code checks the environment variables to see if it is `local` or `production`. If it is not the `local` environment then it will use the AWS RDS variables to connect to the `production` database instead of the `local` database.
+
+NOTE: You'll have to download Postgres and create the local database yourself via commandline
+
+- Copy this code below the code from the step above
+
+```
+# AWS EB Settings
+AWS_QUERYSTRING_AUTH = False
+AWS_ACCESS_KEY_ID = '[YOUR AWS ACCESS KEY ID]'
+AWS_SECRET_ACCESS_KEY = '[YOUR AWS SECRET ACCESS KEY]'
+```
+
+3) Initialize your EB environment using `eb init -p python2.7 [PROJECT NAME]`
+
+4) Create your EB environment using `eb create eb-virt` (this will launch and create your elastic beanstalk environment)
+
+	- If you get an error like `Error: pg_config executable not found` in your `eb logs` then: 
+
+
 4) `STILL IN PROGRESS`
 
 
@@ -131,5 +193,44 @@ Since we have an `App.jsx` file in our `reactjs` folder, we have created an entr
 Please email neelk07@gmail.com
 
 
+## Helpful Links
 
+- http://www.trysudo.com/deploying-django-app-on-aws-using-elastic-beanstalk/
+- http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-django.html
 
+## Random Errors
+
+```
+sudo yum install libtiff-devel libjpeg-devel libzip-devel freetype-devel \
+    lcms2-devel libwebp-devel tcl-devel tk-devel
+```
+
+## Deploying to Heroku 
+
+1) Move `requirements.txt` inside the outer `DJANGO PROJECT FOLDER` (so it is on the same level as the `manage.py`
+
+2) Create `Procfile` with the following contents:
+```
+web: gunicorn {{ project_name }}.wsgi
+```
+3) Initialize `.git` on the same level as `manage.py`
+
+4) Create local database by logging into Postgres and running `CREATE DATABASE [NAME];`
+
+5) Followed https://github.com/SamSamskies/django-webpack-heroku-example
+
+6) Add Postgres add-on for Django by running 
+	```
+	heroku addons:create heroku-postgresql:hobby-dev
+	```
+7) Install the necessary `python` libraries:
+	```
+    pip install dj-database-url
+    pip freeze > requirements.txt
+	```
+7) Change your `settings.py` file:
+	```
+    import dj_database_url
+    DATABASES['default'] =  dj_database_url.config()
+    ```
+	- https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-python 
