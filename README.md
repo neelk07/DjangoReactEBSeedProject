@@ -189,10 +189,6 @@ Since we have an `App.jsx` file in our `reactjs` folder, we have created an entr
 1) Replace placeholder with your `DJANGO PROJECT NAME` in `.gitignore` to ignore the `node_modules` folder
 
 
-## Questions
-Please email neelk07@gmail.com
-
-
 ## Helpful Links
 
 - http://www.trysudo.com/deploying-django-app-on-aws-using-elastic-beanstalk/
